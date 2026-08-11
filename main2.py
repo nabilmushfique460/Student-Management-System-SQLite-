@@ -1,6 +1,5 @@
 import sys
 import sqlite3
-
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QTableWidget, QTableWidgetItem)
 
