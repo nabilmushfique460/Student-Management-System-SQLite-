@@ -44,3 +44,5 @@ app = QApplication(sys.argv)
 age_calculator = AgeCalculator()
 age_calculator.show()
 sys.exit(app.exec())
+
+# pyinstaller --onefile --windowed --clean age_calculator.py

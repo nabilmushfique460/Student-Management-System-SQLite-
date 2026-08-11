@@ -60,3 +60,5 @@ app = QApplication(sys.argv)
 calculator = SpeedCalculator()
 calculator.show()
 sys.exit(app.exec())
+
+# pyinstaller --onefile --windowed --clean speed_calculator.py
