@@ -1,8 +1,9 @@
 import sys
 import sqlite3
+
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import (QApplication, QVBoxLayout, QLabel, QWidget, QGridLayout,
-                             QLineEdit, QPushButton, QMainWindow, QTableWidget, QTableWidgetItem)
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QTableWidget, QTableWidgetItem)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -15,27 +16,30 @@ class MainWindow(QMainWindow):
         add_student_action = QAction("Add Student", self)
         file_menu_item.addAction(add_student_action)
 
-
         about_action = QAction("About", self)
         help_menu_item.addAction(about_action)
 
         self.table = QTableWidget()
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(("Id", "Name", "Course", "Mobile"))
-        self.table.verticalHeader().setVisible(False)
         self.setCentralWidget(self.table)
-
 
     def load_data(self):
         connection = sqlite3.connect("database.db")
         result = connection.execute("SELECT * FROM students")
-        self.table.setRowCount(0)
-        for row_number, row_date in enumerate(result):
-            self.table.insertRow(row_number)
-            for column_number, data in enumerate(row_date):
-                self.table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
-        connection.close()
 
+        # Reset table to 0 rows before loading data
+        # (prevents duplicating data if you call this function multiple times)
+        self.table.setRowCount(0)
+
+        # Loop through the database results and insert them into the GUI table
+        for row_number, row_data in enumerate(result):
+            self.table.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                # QTableWidgetItem requires the data to be a string
+                self.table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
+
+        connection.close()
 
 
 app = QApplication(sys.argv)
