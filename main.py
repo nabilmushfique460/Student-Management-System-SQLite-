@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         # About Action
         about_action = QAction("About", self)
         help_menu_item.addAction(about_action)
+        about_action.triggered.connect(self.about)
 
         # Search Action
         search_action = QAction(QIcon("icons/search.png"), "Search", self)
@@ -125,6 +126,23 @@ class MainWindow(QMainWindow):
     def delete(self):
         dialog = DeleteDialog()
         dialog.exec()
+
+    def about(self):
+        dialog = AboutDialog()
+        dialog.exec()
+
+
+class AboutDialog(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("About")
+        content = """
+        This app was created during the course "The Python Mega Course".
+        Feel free to modify and use this app however you'd like.
+        """
+
+        self.setText(content)
+
 
 class EditDialog(QDialog):
     def __init__(self, parent=None):
