@@ -1,7 +1,7 @@
 import sys
 import sqlite3
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtGui import QAction, QIcon, QColor
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QTableWidget,
                              QTableWidgetItem, QDialog, QVBoxLayout,
                              QLineEdit, QComboBox, QPushButton, QMessageBox,
@@ -318,22 +318,18 @@ class InsertDialog(QDialog):
             QMessageBox.critical(self, "Error", f"An unexpected error occurred:\n{error}")
 
 
-
 class SearchDialog(QDialog):
     def __init__(self):
         super().__init__()
-        # Set window title and size
         self.setWindowTitle("Search Student")
         self.setFixedWidth(300)
-        self.setFixedHeight(300)
+        self.setFixedHeight(150)
 
-        # Create layout and input widget
         layout = QVBoxLayout()
         self.student_name = QLineEdit()
         self.student_name.setPlaceholderText("Name")
         layout.addWidget(self.student_name)
 
-        # Create button
         button = QPushButton("Search")
         button.clicked.connect(self.search)
         layout.addWidget(button)
@@ -342,18 +338,32 @@ class SearchDialog(QDialog):
 
     def search(self):
         name = self.student_name.text()
-        connection = DatabaseConnection().connect()
-        cursor = connection.cursor()
-        result = cursor.execute("SELECT * FROM students WHERE name = ?", (name,))
-        row = list(result)[0]
-        print(row)
-        items = main_window.table.findItems("John Smith", Qt.MatchFlag.MatchFixedString)
-        for item in items:
-            print(item)
-            main_window.table.item(item.row(), 1).setSelected(True)
+        main_window.table.clearSelection()
 
-        cursor.close()
-        connection.close()
+        # Reset all rows to a standard white background before a new search
+        for row in range(main_window.table.rowCount()):
+            for col in range(main_window.table.columnCount()):
+                item = main_window.table.item(row, col)
+                if item:
+                    item.setBackground(QColor("white"))
+
+        # Find matching items
+        items = main_window.table.findItems(name, Qt.MatchFlag.MatchContains)
+
+        if items:
+            for item in items:
+                target_row = item.row()
+                main_window.table.selectRow(target_row)
+                main_window.cell_clicked()
+
+                # Make every cell in the found row Light Blue
+                for col in range(main_window.table.columnCount()):
+                    # You can change "lightblue" to "blue" or "#0078D7" (Hex code)
+                    main_window.table.item(target_row, col).setBackground(QColor("lightblue"))
+
+            self.accept()
+        else:
+            QMessageBox.information(self, "Not Found", f"No student found with the name: {name}")
 
 
 # Run the setup script to ensure DB exists
